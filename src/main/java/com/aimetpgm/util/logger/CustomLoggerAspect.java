@@ -1,6 +1,6 @@
 package com.aimetpgm.util.logger;
 
-import com.sun.deploy.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.JoinPoint;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -9,13 +9,10 @@ import org.aspectj.lang.reflect.CodeSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -52,21 +49,30 @@ public class CustomLoggerAspect {
     }
 
     @Around("@annotation(CustomLogger)")
-    public Object logMethodProcesing(ProceedingJoinPoint joinPoint) throws Throwable {
-//        System.currentTimeMillis();
-        return joinPoint.proceed();
+    public void logMethodProcesing(ProceedingJoinPoint joinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
+        Object returnValue = joinPoint.proceed();
+        long endTime = System.currentTimeMillis() - startTime;
+        StringBuilder logMsg = new StringBuilder(joinPoint.getSignature().getName().concat("()"));
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:SSS");
+        logMsg.append(" was executed at ").append(dateFormatter.format(new Date(startTime)));
+        logMsg.append(" using ").append(endTime).append(" ms");
+        LOGGER.info(logMsg.toString());
     }
 
+    //TODO implement some useful logging! :D
     @AfterReturning(value = "@annotation(CustomLogger)", returning = "returnValue")
     public void logMethodFinish(JoinPoint joinPoint, Object[] returnValue) {
         LOGGER.info("smth2");
     }
 
+    //TODO implement some useful logging! :D
     @After(value = "@annotation(CustomLogger)")
     public void logMethodAfter(JoinPoint joinPoint) {
-        LOGGER.info("smth3");
+        LOGGER.info(joinPoint.getSignature().getName().concat("() Finish"));
     }
 
+    //TODO implement some useful logging! :D
     @AfterThrowing(pointcut = "@annotation(CustomLogger)")
     public void logMethodThrowing(JoinPoint joinPoint) {
         LOGGER.info("smth4");
