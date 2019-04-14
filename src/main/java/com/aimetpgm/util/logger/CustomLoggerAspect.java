@@ -69,7 +69,7 @@ public class CustomLoggerAspect {
     //TODO implement some useful logging! :D
     @After(value = "@annotation(CustomLogger)")
     public void logMethodAfter(JoinPoint joinPoint) {
-        LOGGER.info(joinPoint.getSignature().getName().concat("() Finish"));
+        LOGGER.info(joinPoint.getSignature().getName().concat("() Finished"));
     }
 
     //TODO implement some useful logging! :D
